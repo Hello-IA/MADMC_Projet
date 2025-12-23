@@ -1,8 +1,8 @@
 from read_file import readFile
 import numpy as np
-w = np.zeros(100,dtype=int)
-v = np.zeros((100,2),dtype=int)
-filename = "Data/100_items/2KP100-TA-0.dat"
+w = np.zeros(16,dtype=int)
+v = np.zeros((16,2),dtype=int)
+filename = "2KP200-TA-0_test.dat"
 capacity, weights, values = readFile(filename,w,v)
 
 def dominates(a, b):
@@ -34,8 +34,9 @@ class Solution:
 
 
 
-def recur_lorenz(capacity, weights, values):
+def pareto_dinamique(capacity, weights, values):
     v = len(values)
+    print(v)
     t = [[[] for _ in range(capacity + 1)] for _ in range(v + 1)]
 
     t[0][0] = [Solution((0,)*v)]  
@@ -71,13 +72,35 @@ def recur_lorenz(capacity, weights, values):
             t[i][w] = pareto_filter(solutions)
     return t
 
-DP = recur_lorenz(capacity, weights, values)
-solution = DP[len(values)][capacity][0]
+def Lorenz_otp(solution):
+    opt = []
+    for s in solution:
+        obj = s.objectives[:]
+        obj = tuple(sorted(obj))
+        sum = 0
+        lorenz = []
+        for o in obj:
+            sum += o
+            lorenz.append(sum)
+        opt.append(
+                        Solution(
+                            objectives=tuple(lorenz),
+                            prev=s.prev,
+                            taken=s.taken
+                        )
+                    )
+    return opt
 
-choix = []
-while solution.prev is not None:
-    choix.append(solution.taken)
-    solution = solution.prev
+DP = pareto_dinamique(capacity, weights, values)
 
-choix.reverse()
-print(choix)
+lorenz_solution = Lorenz_otp(DP[len(values)][capacity])
+for sol in lorenz_solution:
+    s = sol
+    choix = []
+    while s.prev is not None:
+        choix.append(s.taken)
+        s = s.prev
+    choix.reverse()
+    print("vecteur solution", sol.prev.objectives, end="")
+    print("Lorenz vecteur solution ", sol.objectives, end="")
+    print(choix)
