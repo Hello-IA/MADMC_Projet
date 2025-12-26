@@ -8,6 +8,10 @@ capacity, weights, values = readFile(filename,w,v)
 def dominates(a, b):
     return all(x >= y for x, y in zip(a.objectives, b.objectives)) and any(x > y for x, y in zip(a.objectives, b.objectives))
 
+
+def dominates_(a, b):
+    return all(x >= y for x, y in zip(a, b)) and any(x > y for x, y in zip(a, b))
+
 def pareto_filter(solutions):
     pareto = []
     for s in solutions:
@@ -36,11 +40,13 @@ class Solution:
 
 def pareto_dinamique(capacity, weights, values):
     v = len(values)
-    print(v)
+    p = values.shape[1]  # number of objectives
+    # print(v)
     t = [[[] for _ in range(capacity + 1)] for _ in range(v + 1)]
 
-    t[0][0] = [Solution((0,)*v)]  
-    for i in range(1, v+1):
+    t[0][0] = [Solution((0,) * p)]  #dimention of objectives use 
+    
+    for i in range(1, v+1): 
         wi = weights[i - 1]
         vi = values[i - 1]  
 
@@ -72,35 +78,64 @@ def pareto_dinamique(capacity, weights, values):
             t[i][w] = pareto_filter(solutions)
     return t
 
-def Lorenz_otp(solution):
+def Lorenz_vec(solution):
+    srt = sorted(solution)   
+    acc = 0
     opt = []
-    for s in solution:
-        obj = s.objectives[:]
-        obj = tuple(sorted(obj))
-        sum = 0
-        lorenz = []
-        for o in obj:
-            sum += o
-            lorenz.append(sum)
-        opt.append(
-                        Solution(
-                            objectives=tuple(lorenz),
-                            prev=s.prev,
-                            taken=s.taken
-                        )
-                    )
-    return opt
+    for s in srt:
+        acc += s
+        opt.append(acc)
+    return tuple(opt)
 
+def lorenz_transform(pareto_solutions):
+    return [Solution(Lorenz_vec(s.objectives), prev=s, taken=False) for s in pareto_solutions]
+
+
+
+
+
+print("---------Part1---------")
+# DP[len(values)][capacity]: this is pareto front for full capacity, not =< capacity
+n = len(weights)
 DP = pareto_dinamique(capacity, weights, values)
+all_solutions = [s for w in range(capacity + 1) for s in DP[n][w]]
+pareto_front = pareto_filter(all_solutions)
+lorenz_solutions = lorenz_transform(pareto_front)
 
-lorenz_solution = Lorenz_otp(DP[len(values)][capacity])
-for sol in lorenz_solution:
-    s = sol
+for sol in lorenz_solutions:
+    base = sol.prev
     choix = []
+    s = base
     while s.prev is not None:
         choix.append(s.taken)
         s = s.prev
     choix.reverse()
-    print("vecteur solution", sol.prev.objectives, end="")
-    print("Lorenz vecteur solution ", sol.objectives, end="")
-    print(choix)
+    print("Objective:", base.objectives, "Lorenz:", sol.objectives, "Choices:", choix)
+
+print("---------Part1:counterexample---------")
+# Part 1 counterexample:
+solution1 = lorenz_solutions[2]
+solution2 = lorenz_solutions[4]
+print("solution 1 Objective:", solution1.prev.objectives, "Lorenz:", solution1.objectives)
+print("solution 2 Objective:", solution2.prev.objectives, "Lorenz:", solution2.objectives)
+
+if dominates_(solution1.objectives, solution2.objectives):
+    print("Solution 1 Lorenz-dominates Solution 2")
+else:
+    print("Solution 1 does not Lorenz-dominate Solution 2")
+    
+added_item = (0, 876)
+solution1_added = tuple(
+    a + b for a, b in zip(solution1.prev.objectives, added_item))
+solution2_added = tuple(
+    a + b for a, b in zip(solution2.prev.objectives, added_item)
+)
+print("After adding (0,876) to both:")
+print("new Solution 1 objectives:", solution1_added, " Lorenz:", Lorenz_vec(solution1_added))
+print("new Solution 2 objectives:", solution2_added, " Lorenz:", Lorenz_vec(solution2_added))
+
+    
+if dominates_(solution1_added, solution2_added):
+    print("Solution 1 Lorenz-dominates Solution 2")
+else:
+    print("Solution 1 does not Lorenz-dominate Solution 2")
