@@ -5,9 +5,15 @@ v = np.zeros((16,2),dtype=int)
 filename = "2KP200-TA-0_test.dat"
 capacity, weights, values = readFile(filename,w,v)
 
+def owa_score(obj, omega):
+    y_sorted = sorted(obj)  # ascending
+    return sum(w * v for w, v in zip(omega, y_sorted))
+
+def omega_default(p):
+    return [p - i for i in range(p)]  # [p, p-1, ..., 1]
+
 def dominates(a, b):
     return all(x >= y for x, y in zip(a.objectives, b.objectives)) and any(x > y for x, y in zip(a.objectives, b.objectives))
-
 
 def dominates_(a, b):
     return all(x >= y for x, y in zip(a, b)) and any(x > y for x, y in zip(a, b))
@@ -102,6 +108,11 @@ all_solutions = [s for w in range(capacity + 1) for s in DP[n][w]]
 pareto_front = pareto_filter(all_solutions)
 lorenz_solutions = lorenz_transform(pareto_front)
 
+objectives = values.shape[1]
+omega = omega_default(objectives)
+
+# ... after computing lorenz_solutions ...
+
 for sol in lorenz_solutions:
     base = sol.prev
     choix = []
@@ -110,7 +121,15 @@ for sol in lorenz_solutions:
         choix.append(s.taken)
         s = s.prev
     choix.reverse()
-    print("Objective:", base.objectives, "Lorenz:", sol.objectives, "Choices:", choix)
+
+    owa = owa_score(base.objectives, omega)
+
+    print(
+        "Objective:", base.objectives,
+        "Lorenz:", sol.objectives,
+        "OWA:", owa,   
+        "Choices:", choix
+    )
 
 print("---------Part1:counterexample---------")
 # Part 1 counterexample:
