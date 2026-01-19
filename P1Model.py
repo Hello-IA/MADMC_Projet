@@ -211,3 +211,4 @@ prev_Ls = [sol1["L"]]
 sol2 = PL(weights, values, capacity, omega, prev_Ls, verbose=True)
 print("sol1:", sol1["L"], sol1["obj"])
 print("sol2:", sol2["L"], sol2["obj"])
+"""we see that in the PL's solution, the worst-case is slightly worse but the total is better than in P1's solution."""
