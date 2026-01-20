@@ -1,4 +1,5 @@
 import pdb
+from turtle import pd
 import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
@@ -204,11 +205,15 @@ v = np.zeros((16,2),dtype=int)
 filename = "2KP200-TA-0_test.dat"
 capacity, weights, values = readFile(filename,w,v)
 objectives = values.shape[1]
-omega =[objectives - i for i in range(objectives)]
+omegas = [[a, 1] for a in [1.01, 1.5, 2, 5, 10]]
 
-sol1 = P1(weights, values, capacity, omega, verbose=False)
-prev_Ls = [sol1["L"]]
-sol2 = PL(weights, values, capacity, omega, prev_Ls, verbose=True)
-print("sol1:", sol1["L"], sol1["obj"])
-print("sol2:", sol2["L"], sol2["obj"])
+for omega in omegas:
+    sol1 = P1(weights, values, capacity, omega, verbose=False)
+    prev_Ls = [sol1["L"]]
+    sol2 = PL(weights, values, capacity, omega, prev_Ls, verbose=False)
+
+    print("omega:", omega, 
+          "P1 OWA:", sol1["obj"],
+          "P1 L:", sol1["L"],
+          "PL OWA:", sol2["obj"] if sol2["obj"] else None)
 """we see that in the PL's solution, the worst-case is slightly worse but the total is better than in P1's solution."""
