@@ -11,7 +11,7 @@
 
 ## How to run:
 
-### 1. Dynamic Programming
+### 1. Indirect: Dynamic Programming
 
 Finds one Lorenz-efficient solution.
 
@@ -20,7 +20,7 @@ python lorenz_non_domines_indirecte.py
 
 ```
 
-### 2. iterative_PL and enumerate_same_lorenz_p2 - Alternative Solutions
+### 2. Direct: iterative_PL and enumerate_same_lorenz_p2 - Alternative Solutions
 
 Finds all Lorenz-efficient solutions.
 
