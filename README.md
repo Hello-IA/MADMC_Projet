@@ -1,6 +1,5 @@
 # Lorenz Efficiency Solver for Multi-Objective Knapsack
 
-Find Lorenz-efficient solutions to multi-objective knapsack problems using Gurobi.
 
 ## Requirements
 
@@ -8,23 +7,9 @@ Find Lorenz-efficient solutions to multi-objective knapsack problems using Gurob
 - NumPy
 - Gurobi (with valid license)
 
-```bash
-pip install numpy gurobipy
-```
 
-Get a free academic Gurobi license at: https://www.gurobi.com/academia/
 
-## Quick Start
-
-Run the main script:
-
-```bash
-python P1Model.py
-```
-
-This will solve the test instance and display all Lorenz-efficient solutions.
-
-## Main Functions
+## How to run:
 
 ### 1. Dynamic Programming
 
