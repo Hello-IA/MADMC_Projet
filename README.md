@@ -27,21 +27,3 @@ Finds all Lorenz-efficient solutions.
 ```
 python P1Model.py
 ```
-
-
-## Output
-
-Each solution contains:
-- `x` - Items to select (binary array)
-- `y` - Objective values
-- `L` - Lorenz vector (sorted cumulative values)
-- `obj` - OWA objective value
-
-## Parameters
-
-**Required:**
-- `weights` - Item weights (numpy array)
-- `values` - Item values per objective (2D array)
-- `capacity` - Knapsack capacity
-- `omega` - Weight vector (strictly decreasing)
-
