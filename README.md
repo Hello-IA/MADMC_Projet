@@ -1,4 +1,4 @@
-# Lorenz Efficiency Solver for Multi-Objective Knapsack
+# Lorenz Non-Dominated Points for Multi-Objective Knapsack
 
 
 ## Requirements
